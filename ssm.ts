@@ -19,7 +19,7 @@ import {
 import { paramName, SSMParams } from "./ssm-params.ts";
 
 export const AWSCredentialsSchema = T.Object({
-  AWS_REGION: T.Readonly(T.String()),
+  AWS_REGION: T.ReadonlyOptional(T.String()),
   AWS_ACCESS_KEY_ID: T.Readonly(T.String()),
   AWS_SECRET_ACCESS_KEY: T.Readonly(T.String()),
   AWS_SESSION_TOKEN: T.ReadonlyOptional(T.String()),
