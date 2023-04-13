@@ -7,7 +7,7 @@ import {
   PutParameterCommand,
   SSMClient,
   Tag,
-} from "https://esm.quack.id/@aws-sdk/client-ssm@3.226.0";
+} from "https://esm.quack.id/@aws-sdk/client-ssm@3.312.0";
 import {
   camelCaseProperties,
   LiteralUnion,
@@ -60,6 +60,9 @@ export interface CreateParameter extends ValidParameter {
 
 /** Wrapper for AWS SSM functionality */
 export class SSM {
+  /**
+   * @throws {QuackError}
+   */
   static initializeFromEnv() {
     const credentials = Deno.env.toObject();
     if (AWSCredentialsCheck.Check(credentials)) {
@@ -87,7 +90,7 @@ export class SSM {
   }
 
   /**
-   * @throws {Error}
+   * @throws {QuackError}
    */
   async get(Name: LiteralUnion<SSMParams, string>) {
     const command = new GetParameterCommand({
@@ -101,12 +104,12 @@ export class SSM {
           Value: Parameter.Value,
         };
       }
-      throw new Error(`Unable to retrieve parameter ${Name}`);
+      throw new QuackError(`Unable to retrieve parameter ${Name}`);
     });
   }
 
   /**
-   * @throws {Error}
+   * @throws {QuackError}
    */
   async getMany(Names: string[]) {
     const command = new GetParametersCommand({
@@ -117,7 +120,7 @@ export class SSM {
       return {
         Parameters: (Parameters ?? []).map(({ Name, Value }) => {
           if (Name === undefined || Value === undefined) {
-            throw new Error(`Unable to retrieve parameter ${Name}`);
+            throw new QuackError(`Unable to retrieve parameter ${Name}`);
           }
           return {
             Name,
@@ -130,7 +133,7 @@ export class SSM {
   }
 
   /**
-   * @throws {Error}
+   * @throws {QuackError}
    */
   async getByPath(Path: string, Recursive: boolean = true) {
     const command = new GetParametersByPathCommand({
@@ -153,12 +156,6 @@ export class SSM {
     });
     return await this.client.send(command);
   }
-
-  /** Create a new data url SSM parameter */
-  // async createDataUrlParam(Name: string, data: Record<string, string>) {
-  //   const dataString = createDefaultExportDataUrl(data);
-  //   return await this.create({ Name, Value: dataString, Tags: [ENCODING_TAG("dataurl")] });
-  // }
 
   /** Delete a parameter with the given name */
   async delete(Name: string) {
